@@ -1648,8 +1648,10 @@ notificationManager.createNotificationChannel(sleepTimerChannel)
 
         val usbOutput = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
             .firstOrNull {
+                it. type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                it. type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
                 it.type == AudioDeviceInfo.TYPE_USB_DEVICE ||
-                    it.type == AudioDeviceInfo.TYPE_USB_HEADSET
+                it.type == AudioDeviceInfo.TYPE_USB_HEADSET
             }
 
         if (usbOutput == null) {
@@ -1685,8 +1687,10 @@ notificationManager.createNotificationChannel(sleepTimerChannel)
 
         audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
             .filter {
+                it. type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                it. type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
                 it.type == AudioDeviceInfo.TYPE_USB_DEVICE ||
-                    it.type == AudioDeviceInfo.TYPE_USB_HEADSET
+                it.type == AudioDeviceInfo.TYPE_USB_HEADSET
             }
             .forEach { device ->
                 try {
