@@ -26,9 +26,7 @@
 ### [🌐 Website](https://rhythmweb.vercel.app/) • [📥 Download](https://github.com/cromaguy/Rhythm/releases/latest) • [🎧 Discord](https://discord.gg/XjPyUYPQYc) • [💬 Telegram](https://t.me/RhythmSupport) • [📖 Wiki](https://github.com/cromaguy/Rhythm/wiki)
 
 </div>
-
 ---
-
 ## 💖 Support the Developer
 
 Building and maintaining **Rhythm** is a massive labor of love, provided completely free and open-source. If you love using this app, please consider supporting development!
