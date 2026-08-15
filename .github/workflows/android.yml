@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "EarpodSupport" ]
   pull_request:
     branches: [ "main" ]
 
@@ -70,7 +70,6 @@ jobs:
         echo "Branch: ${{ github.head_ref }}" >> build_info.txt
 
     - name: Upload PR artifacts
-      if: github.event_name == 'pull_request'
       uses: actions/upload-artifact@v6
       with:
         name: rhythm-pr-${{ github.event.pull_request.number }}
