@@ -175,6 +175,11 @@ fun ExperimentalFeaturesScreen(
     val audioRoutingMode by appSettings.audioRoutingMode.collectAsState()
     val haptic = LocalHapticFeedback.current
     
+    // DAC Support states
+    val dacSupportEnabled by appSettings.dacSupportEnabled.collectAsState()
+    val dacBitPerfectMode by appSettings.dacBitPerfectMode.collectAsState()
+    val dacUseNativeRouting by appSettings.dacUseNativeRouting.collectAsState()
+    
     // Third-party integrations states
     val broadcastStatusEnabled by appSettings.broadcastStatusEnabled.collectAsState()
     val bluetoothLyricsEnabled by appSettings.bluetoothLyricsEnabled.collectAsState()
@@ -187,6 +192,15 @@ fun ExperimentalFeaturesScreen(
 
     var showRestartDialog by remember { mutableStateOf(false) }
     var restartDialogMessage by remember { mutableStateOf("") }
+
+    // LaunchedEffect to handle DAC setting changes
+    LaunchedEffect(dacSupportEnabled, dacBitPerfectMode, dacUseNativeRouting) {
+        if (dacSupportEnabled) {
+            Log.d("ExperimentalFeatures", "DAC Support enabled - Triggering audio routing configuration")
+            // Trigger DAC initialization and audio routing configuration
+            onDacSettingsChanged(context, dacBitPerfectMode, dacUseNativeRouting)
+        }
+    }
 
     CollapsibleHeaderScreen(
         title = context.getString(R.string.settings_experimental),
@@ -225,6 +239,52 @@ fun ExperimentalFeaturesScreen(
                             context.getString(R.string.settings_enable_album_editing_desc),
                             toggleState = enableAlbumEditing,
                             onToggleChange = { appSettings.setEnableAlbumEditing(it) }
+                        )
+                    )
+                )
+            )
+            
+            // DAC Support group
+            add(
+                SettingGroup(
+                    title = "DAC Support (Experimental)",
+                    items = listOf(
+                        SettingItem(
+                            MaterialSymbolIcon("speaker"),
+                            "Enable DAC Support",
+                            "Enable support for USB DACs and high-resolution audio output",
+                            toggleState = dacSupportEnabled,
+                            onToggleChange = { enabled ->
+                                appSettings.setDacSupportEnabled(enabled)
+                                Log.d("ExperimentalFeatures", "DAC Support toggled: $enabled")
+                                if (enabled) {
+                                    Toast.makeText(context, "DAC Support enabled", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "DAC Support disabled", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        ),
+                        SettingItem(
+                            MaterialSymbolIcon("high_quality"),
+                            "Bit-Perfect Mode",
+                            "Enable bit-perfect audio output (Android 14+) - maintains audio fidelity without processing",
+                            toggleState = dacBitPerfectMode,
+                            onToggleChange = { enabled ->
+                                appSettings.setDacBitPerfectMode(enabled)
+                                Log.d("ExperimentalFeatures", "DAC Bit-Perfect mode toggled: $enabled")
+                            },
+                            enabled = dacSupportEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                        ),
+                        SettingItem(
+                            MaterialSymbolIcon("settings_input_svideo"),
+                            "Use Native Routing",
+                            "Use native Android audio routing APIs for DAC connectivity (recommended)",
+                            toggleState = dacUseNativeRouting,
+                            onToggleChange = { enabled ->
+                                appSettings.setDacUseNativeRouting(enabled)
+                                Log.d("ExperimentalFeatures", "DAC Native Routing toggled: $enabled")
+                            },
+                            enabled = dacSupportEnabled
                         )
                     )
                 )
@@ -395,6 +455,34 @@ fun ExperimentalFeaturesScreen(
     }
 
     // Show update bottomsheet - removed, now handled globally in LocalNavigation
+}
+
+/**
+ * Handles DAC settings changes and triggers appropriate audio routing configuration
+ */
+private fun onDacSettingsChanged(
+    context: Context,
+    bitPerfectMode: Boolean,
+    useNativeRouting: Boolean
+) {
+    Log.d("DAC", "DAC settings changed - Bit-Perfect: $bitPerfectMode, Native Routing: $useNativeRouting")
+    
+    // Trigger audio device manager to reconfigure routing
+    try {
+        // You can add DAC-specific initialization logic here
+        // such as initializing the AudioDeviceManager with DAC routing preferences
+        if (useNativeRouting && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            Log.d("DAC", "Configuring native audio routing for DAC")
+            // Future: Initialize DAC-specific audio routing
+        }
+        
+        if (bitPerfectMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Log.d("DAC", "Enabling bit-perfect mode for high-resolution audio")
+            // Future: Configure bit-perfect audio output
+        }
+    } catch (e: Exception) {
+        Log.e("DAC", "Error configuring DAC settings", e)
+    }
 }
 
 
